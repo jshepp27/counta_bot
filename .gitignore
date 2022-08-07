@@ -1,7 +1,7 @@
 .DS_store
 __pycache__
 *.pyc
+creds.json
 
 data/*
 .idea/
-creds.json
