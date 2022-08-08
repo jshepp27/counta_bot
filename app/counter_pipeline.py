@@ -105,9 +105,46 @@ def semantic_entailment(claim, statements, classifier=classifier):
 
     return counter
 
-generator = pipeline("text-generation", model="gpt2")
+import torch
+from transformers import GPT2LMHeadModel,  GPT2Tokenizer, GPT2Config, GPT2LMHeadModel
+
 def gpt2(triple):
-    return generator(triple, max_length=30, num_return_sequences=1)[0]["generated_text"]
+    device = "cpu"
+    output_dir = "./models/gpt_weights"
+
+    model = GPT2LMHeadModel.from_pretrained(output_dir)
+    tokenizer = GPT2Tokenizer.from_pretrained(output_dir)
+    model.to(device)
+
+    model.eval()
+
+    prompt = triple + "."
+
+    generated = torch.tensor(tokenizer.encode(prompt)).unsqueeze(0)
+    generated = generated.to(device)
+
+    print(generated)
+
+    sample_outputs = model.generate(
+        generated,
+        # bos_token_id=random.randint(1,30000),
+        do_sample=True,
+        top_k=50,
+        max_length=50,
+        top_p=0.95,
+        num_return_sequences=1
+    )
+
+    response = []
+    for i, sample_output in enumerate(sample_outputs):
+        response.append("{}: {}\n\n".format(i, tokenizer.decode(sample_output, skip_special_tokens=True)))
+
+    return response[0]
+
+# generator = pipeline("text-generation", model="gpt2")
+# def gpt2(triple):
+#     return generator(triple, max_length=30, num_return_sequences=1)[0]["generated_text"]
+import spacy
 
 def counter(topic, claim):
     # Construct Argument Unit
@@ -144,7 +181,7 @@ def counter(topic, claim):
 
     for i in range(0, len(results_)):
         type, relation, concept = results_[i]["e"]
-        concept = concept["concept"].replace("_", "")
+        concept = concept["concept"].replace("_", " ")
 
         concepts.add(f"{concept} {relation} {query}")
 
@@ -152,7 +189,7 @@ def counter(topic, claim):
 
     for i in range(0, len(results_)):
         type, relation, concept = results_[i]["e"]
-        concept = concept["concept"].replace("_", "")
+        concept = concept["concept"].replace("_", " ")
 
         concept_ = f"{concept} {relation} {query}"
 
@@ -178,7 +215,7 @@ def counter(topic, claim):
     else:
         counter_argument = f"{entailment_[0]} can lead to {entailment_[2]}"
 
-    counter_argument_ = counter_argument + " " + counter_evidence_[0]
+    counter_argument_ = counter_argument
     response = gpt2(counter_argument_)
 
     return {
