@@ -105,6 +105,10 @@ def semantic_entailment(claim, statements, classifier=classifier):
 
     return counter
 
+generator = pipeline("text-generation", model="gpt2")
+def gpt2(triple):
+    return generator(triple, max_length=30, num_return_sequences=1)[0]["generated_text"]
+
 def counter(topic, claim):
     # Construct Argument Unit
     # arg_unit = {
@@ -174,11 +178,14 @@ def counter(topic, claim):
     else:
         counter_argument = f"{entailment_[0]} can lead to {entailment_[2]}"
 
+    counter_argument_ = counter_argument + " " + counter_evidence_[0]
+    response = gpt2(counter_argument_)
+
     return {
         "argument": claim,
         "counters": f"Did you know that {counter_argument}?",
+        "response": response,
         "evidence": counter_evidence_}
-
 
 # from sentence_transformers import SentenceTransformer, util
 # import torch
