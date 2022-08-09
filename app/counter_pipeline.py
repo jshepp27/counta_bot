@@ -144,7 +144,6 @@ def gpt2(triple):
 # generator = pipeline("text-generation", model="gpt2")
 # def gpt2(triple):
 #     return generator(triple, max_length=30, num_return_sequences=1)[0]["generated_text"]
-import spacy
 
 def counter(topic, claim):
     # Construct Argument Unit
