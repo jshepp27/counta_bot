@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<div style="text-align:center;">
+
+    <img src="countabot_logo.jpg"></img>
+    <br></br>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %} {% endblock %} - Countabot</title>
+        <style>
+            .message {
+                padding: 10px;
+                margin: 5px;
+                background-color: #f3f3f3
+            }
+            nav a {
+                color: #d64161;
+                font-size: 3em;
+                margin-left: 50px;
+                text-decoration: none;
+            }
+
+        </style>
+    </head>
+
+
+    <body>
+
+
+            <nav>
+                <a href="{{ url_for('index') }}">CountaBot</a>
+            </nav>
+            <hr>
+
+            <form action="{{ url_for('my_argument') }}" method="post">
+                Claim: <input type="text" name="claim">
+                <br></br>
+                Topic: <input type="text" name="topic">
+                <br></br>
+            <input type="submit" value="Submit">
+            </form>
+
+    </body>
+
+</div>
+
+</html>
